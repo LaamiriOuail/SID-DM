@@ -1,4 +1,8 @@
 import os
+import sys
+parent_dir = os.path.abspath(os.path.join(os.getcwd(), '.'))
+sys.path.append(parent_dir)
+
 import csv
 import pandas as pd
 import openpyxl
@@ -32,7 +36,7 @@ def process_excel_file(file_path):
         file_name = os.path.splitext(os.path.basename(file_path))[0]
 
         # Define output directory
-        output_dir = os.path.join("DATA", "Module","Etudiant")
+        output_dir = os.path.join("DATA", "Module","Resultat")
         os.makedirs(output_dir, exist_ok=True)
 
         # Save the modified workbook
@@ -48,21 +52,36 @@ def process_excel_file(file_path):
             writer = csv.writer(csvfile)
 
             # Write header
-            writer.writerow(['CODE_ETU', 'PARCOURS'])
-
+            writer.writerow(['CODE_MOD', 'NOTE', 'RESULT', 'SESSION', 'ANNE', 'CODE_ETU'])
+            id_ = ""
+            note = ""
+            result = ""
+            session = ""
+            anne = ""
+            ids:list=[]
             # Iterate through rows and insert into the CSV
             for index, row in df.iterrows():
                 if row['COD_ETU']:
                     code_etu = row['COD_ETU']
-                if "BCG" in file_name:
-                    parcours="BCG"
-                elif "MIP"  in file_name:
-                    parcours="MIP"
-                elif "MIPC"  in file_name:
-                    parcours="MIPC"
-                elif "GEGM"  in file_name:
-                    parcours="GEGM"
-                writer.writerow([code_etu,parcours])
+                for col_name, value in row.items():
+                    if col_name.startswith('Note :'):
+                        id_ = col_name.replace("Note :", "").strip()
+                        note = value
+                    if id_ in col_name:
+                        if col_name.startswith('Résultat :'):
+                            result = value
+                        elif col_name.startswith('Session :'):
+                            session = value
+                        elif col_name.startswith('Année :'):
+                            anne = value
+                    if id_ and note and result and session and anne:
+                        # Write to CSV
+                        writer.writerow([id_, note, result, session, anne, code_etu])
+                        id_ = ""
+                        note = ""
+                        result = ""
+                        session = ""
+                        anne = ""
 
         print(f"Processed {file_path} and saved CSV as {csv_filename}")
         os.remove(modified_file_path)
