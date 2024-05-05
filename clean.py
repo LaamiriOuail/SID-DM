@@ -44,6 +44,8 @@ def fill_missing_by_privious(df,column):
     else:
         print(f'{column} not a column in dataframe')
 
+# Filter the DataFrame to remove rows where CODE_ETU is null
+df.dropna(subset=['CODE_ETU'],inplace=True)
 
 # Apply the clean_note_value function to the NOTE column
 df['NOTE'] = df['NOTE'].apply(clean_note_value)
@@ -56,6 +58,7 @@ df['NOTE'] = df['NOTE'].apply(clean_null_note_value)
 
 fill_missing_by_privious(df,"ANNE")
 fill_missing_by_privious(df,"SESSION")
+
 
 # Save the cleaned DataFrame back to a CSV file
 df.to_csv(base+"/cleaned_module_result.csv", index=False)
