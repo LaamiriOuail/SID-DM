@@ -1,0 +1,73 @@
+ID,NAME,PARCOURS,SEMESTRE
+TLGE1404,Algébre 1,GEGM,1
+TLGE1104,Circuits électriques et électroniques,GEGM,1
+TLGE1204,Electricité,GEGM,1
+TLGE1304,Analyse 1,GEGM,1
+TLGE1504,Algorithmique et Programmation 1,GEGM,1
+TLGE1604,Langue et communication 1,GEGM,1
+TLGE2104,Thermodynamique,GEGM,2
+TLGE2204,Mécanique du point et Optique géométrique,GEGM,2
+TLGE2304,Analyse 2,GEGM,2
+TLGE2404,Algébre 2,GEGM,2
+TLGE2504,Structure de matiére,GEGM,2
+TLGE2604,Langue et communication 2,GEGM,2
+TLGE3104,Mécanique des Solides,GEGM,3
+TLGE3204,Electronique,GEGM,3
+TLGE3304,Statistique descriptive/probabilités,GEGM,3
+TLGE3404,Algorithmique et Programmation 2,GEGM,3
+TLGE3504,Métrologie et instrumentation,GEGM,3
+TLGE3604,Gestion,GEGM,3
+TLGE4104,Electrotechnique,GEGM,4
+TLGE4204,Automatique,GEGM,4
+TLGE4304,Fabrication,GEGM,4
+TLGE4404,Construction mécanique,GEGM,4
+TLGE4504,Informatique 3,GEGM,4
+TLGE4604,Analyse numérique,GEGM,4
+TLBC1104,Biologie cellulaire,BCG,1
+TLBC1204,Optique et Radioactivité,BCG,1
+TLBC1304,Cosmologie & Géodynamique interne,BCG,1
+TLBC1404,Structure de la matiere,BCG,1
+TLBC1504,Algébre 1,BCG,1
+TLBC1604,Langue et communication 1,BCG,1
+TLBC2104,Biologie animale,BCG,2
+TLBC2204,Thermodynamique & Mécanique des fluides,BCG,2
+TLBC2304,Géodynamique externe,BCG,2
+TLBC2404,Réactivite chimique,BCG,2
+TLBC2504,Analyse,BCG,2
+TLBC2604,Langue et communication 2,BCG,2
+TLBC3104,Biologie végétale,BCG,3
+TLBC3204,Electricité,BCG,3
+TLBC3304,Stratigraphie & Paléo-envirennement,BCG,3
+TLBC3404,Chimie Organique 1,BCG,3
+TLBC3504,Chimie Minérale 1,BCG,3
+TLBC3604,probabilités / Statistique,BCG,3
+TLBC4104,Biochimie structurale,BCG,4
+TLBC4204,Microbiologie,BCG,4
+TLBC4304,Chimie Organique 2/Chimie Minérale 2,BCG,4
+TLBC4404,Biochimie métabolique,BCG,4
+TLBC4504,Base de données,BCG,4
+TLBC4604,Langue et communication 3,BCG,4
+TLMP1104,Circuits électriques et électroniques,MIPC,1
+TLMP1204,Electricité,MIPC,1
+TLMP1304,Analyse 1,MIPC,1
+TLMP1404,Algébre 1,MIPC,1
+TLMP1504,Algorithmique et Programmation 1,MIPC,1
+TLMP1604,Langue et communication 1,MIPC,1
+TLMP2104,Thermodynamique,MIPC,2
+TLMP2204,Mécanique du point et Optique géométrique,MIPC,2
+TLMP2304,Analyse 2,MIPC,2
+TLMP2404,Algébre 2,MIPC,2
+TLMP2504,Structure de la matiere,MIPC,2
+TLMP2604,Langue et communication 2,MIPC,2
+TLMP3104,Electrimagnétisme,MIPC,3
+TLMP3204,Analyse 3,MIPC,3
+TLMP3304,Statistique descriptive/probabilités,MIPC,3
+TLMP3404,Algorithmique et Programmation 2,MIPC,3
+TLMP3504,Réactivite chimique,MIPC,3
+TLMP3604,Langue et communication 3,MIPC,3
+TLMP4104,Mécanique des Solides,MIPC,4
+TLMP4204,Mécanique quantique et Réactivite,MIPC,4
+TLMP4304,Analyse 4,MIPC,4
+TLMP4404,Structure de données en C,MIPC,4
+TLMP4504,Chimie Organique 1,MIPC,4
+TLMP4604,Chimie Minérale 1,MIPC,4
