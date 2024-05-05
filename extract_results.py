@@ -48,7 +48,7 @@ def process_excel_file(file_path):
             writer = csv.writer(csvfile)
 
             # Write header
-            writer.writerow(['ID', 'NOTE', 'RESULT', 'SESSION', 'ANNE', 'CODE_ETU'])
+            writer.writerow(['CODE_MOD', 'NOTE', 'RESULT', 'SESSION', 'ANNE', 'CODE_ETU'])
             id_ = ""
             note = ""
             result = ""
