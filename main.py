@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.cm as cm
 
+
+
+
 base_data_dir:str=str(Path("DATA/RES"))
 # Sample data
 data = {
@@ -191,18 +194,102 @@ def evolution_by_inscription():
 
 
 
+def plot_grouped_histogram(data, module_name, module_date, module_session):
+    # Define color dictionary for consistent coloring
+    color_dict = {'V': 'green', 'NV': 'red', 'AC': 'blue', 'NP': 'black'}
+    
+    # Plot grouped histogram with smaller size
+    fig, ax = plt.subplots(figsize=(6, 6))
+    sns.histplot(data=data, x="RESULT", hue="RESULT", multiple="stack", ax=ax, palette=color_dict)
+    ax.set_title(f"Grouped Histogram of Module {module_name} in {module_date}, Session: {module_session}")
+    ax.set_xlabel(f"Result of {module_name}")
+    ax.set_ylabel(f"Count of Results of {module_name}")
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    return fig
 
-def evolution_by_gender():
-    st.title("Evolution des taux d'inscription par sexe, par filière et par année")
-    # Add content for this page here
 
-def evolution_by_bac_series():
-    st.title("Evolution des taux d'inscription par série de baccalauréat pour chaque filière")
-    # Add content for this page here
+def plot_pie_chart(data):
+    # Define color dictionary
+    color_dict = {'V': 'green', 'NV': 'red', 'AC': 'blue', 'NP': 'black'}
+    
+    # Plot pie chart with smaller size
+    fig, ax = plt.subplots(figsize=(6, 6))  # Adjust the figsize as per your preference
+    counts = data["RESULT"].value_counts()
+    ax.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=140, colors=[color_dict[label] for label in counts.index])
+    ax.set_title("Pie Chart of Result Distribution")
+    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    return fig
 
-def success_failure_rate():
-    st.title("Taux de réussite, d’échec et d’acquisition par module, session, semestre, année pour la filière MIPC, BCG, GEGM")
-    # Add content for this page here
+
+def evolution_by_module():
+    st.title("Taux de réussite, d’échec et d’acquisition par module")
+    
+    # Sidebar
+    st.sidebar.header("Customize Data")
+    selected_year = st.sidebar.selectbox("Select Year (Anne)", sorted(data["Notes Par Module"]["ANNE"].unique()))
+    
+    # Get unique PARCOURS IDs from the Module dataframe
+    parcours_ids = data["Module"]["PARCOURS"].unique()
+    selected_parcours = st.sidebar.selectbox("Select Program (Parcours)", sorted(parcours_ids))
+    
+    # Get unique semesters based on the selected parcours
+    semesters = data["Module"][data["Module"]["PARCOURS"] == selected_parcours]["SEMESTRE"].unique()
+    selected_semester = st.sidebar.selectbox("Select Semester", sorted(semesters))
+    
+    # Get unique module names based on the selected parcours and semester
+    module_names = data["Module"][(data["Module"]["PARCOURS"] == selected_parcours) & 
+                                  (data["Module"]["SEMESTRE"] == selected_semester)]["NAME"].unique()
+    selected_module = st.sidebar.selectbox("Select Module Name", sorted(module_names))
+
+    # Allow the session to be None (i.e., no filtering by session)
+    sessions = [None] + sorted(data["Notes Par Module"]["SESSION"].unique())
+    selected_session = st.sidebar.selectbox("Select Session", sessions)
+    
+    # Plot type selection
+    plot_types = ["Data","Grouped Histogram", "Pie Chart"]
+    selected_plot_types = st.sidebar.multiselect("Select Plot Types or Data", plot_types,default=["Data"])
+
+    
+
+    # Filter the data based on user selections
+    if selected_session is None:
+        filtered_data = data["Notes Par Module"][
+            (data["Notes Par Module"]["ANNE"] == selected_year) &
+            (data["Notes Par Module"]["CODE_MOD"].isin(data["Module"][(data["Module"]["PARCOURS"] == selected_parcours) & 
+                                                                    (data["Module"]["NAME"] == selected_module) & 
+                                                                    (data["Module"]["SEMESTRE"] == selected_semester)]["CODE_MOD"]))
+        ]
+    else:
+        filtered_data = data["Notes Par Module"][
+            (data["Notes Par Module"]["ANNE"] == selected_year) &
+            (data["Notes Par Module"]["SESSION"] == selected_session) &
+            (data["Notes Par Module"]["CODE_MOD"].isin(data["Module"][(data["Module"]["PARCOURS"] == selected_parcours) & 
+                                                                    (data["Module"]["NAME"] == selected_module) & 
+                                                                    (data["Module"]["SEMESTRE"] == selected_semester)]["CODE_MOD"]))
+        ]
+
+    # Plot the selected plot types
+    for plot_type in selected_plot_types:
+        if plot_type == "Data":
+             # Display the filtered data
+            st.markdown(f"### Data Table :")
+            st.write(filtered_data)
+        elif plot_type == "Grouped Histogram":
+            # Plot grouped histogram
+            st.markdown(f"### Grouped Histogram of Module {selected_module} in {selected_year}, session: {selected_session if selected_session else '1,2'}:")
+            st.pyplot(plot_grouped_histogram(filtered_data,selected_module,selected_year,selected_session if selected_session else "1,2"))
+        elif plot_type == "Pie Chart":
+            # Plot pie chart
+            st.markdown(f"### Pie Chart of Result Distribution:")
+            st.pyplot(plot_pie_chart(filtered_data))
+   
+
+    
+
+
+
+
 
 # Sidebar
 st.sidebar.header("Navigation")
@@ -210,9 +297,7 @@ st.sidebar.header("Navigation")
 pages = [
     "Display Table", 
     "Taux d'inscription",
-    "Evolution par sexe",
-    "Evolution par série de bac pour chaque filière",
-    "Taux de réussite, d'échec et d'acquisition"
+    "Evolution par Module",
 ]
 selected_pages = st.sidebar.selectbox("Select Page", pages)
 
@@ -227,9 +312,5 @@ if "Display Table" in selected_pages:
 # Display selected page
 elif "Taux d'inscription"  in selected_pages:
     evolution_by_inscription()
-elif "Evolution par sexe"  in selected_pages:
-    evolution_by_gender()
-elif "Evolution par série de bac pour chaque filière"  in selected_pages:
-    evolution_by_bac_series()
-elif "Taux de réussite, d'échec et d'acquisition"  in selected_pages:
-    success_failure_rate()
+elif "Evolution par Module"  in selected_pages:
+    evolution_by_module()

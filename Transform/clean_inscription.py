@@ -6,7 +6,7 @@ sys.path.append(parent_dir)
 import pandas as pd
 
 # Load the Excel file
-excel_file = 'DATA/NV_INSRIT_2014_2015_2016(1) (1).xlsx'
+excel_file = 'DATA/NV_INSRIT_2014_2015_2016(1).xlsx'
 df = pd.read_excel(excel_file, skiprows=1)
 
 # Remove null rows and columns
