@@ -2,6 +2,19 @@
 
 This project involves managing data related to students, modules, and their academic performance. Below is the documentation for the tables used in this project and their relationships.
 
+## Setup :
+
+## Install requirements :
+```bash
+$ pip3 install -r requirements.txt
+```
+
+## Run app :
+```bash
+$ streamlit run ./main.py
+```
+
+
 ## Table Documentation
 
 ### Etudiant Table
