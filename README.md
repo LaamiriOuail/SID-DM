@@ -14,6 +14,14 @@ $ pip3 install -r requirements.txt
 $ streamlit run ./main.py
 ```
 
+## Build docker image : 
+```bash
+$ docker build -t my_streamlit_app . 
+```
+## Run container:
+```bash
+$ docker run -p 8501:8501 my_streamlit_app
+```
 
 ## Table Documentation
 
