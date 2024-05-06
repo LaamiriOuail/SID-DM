@@ -10,7 +10,7 @@ base = "DATA/RES/"
 
 # Read the merged CSV file into a DataFrame
 df_result = pd.read_csv(base+"/result.csv")
-df_module = pd.read_csv(base+"/module.csv")
+df_module = pd.read_csv(base+"/Module.csv")
 
 # Function to clean the note values
 def clean_note_value(note):
@@ -69,7 +69,7 @@ fill_missing_by_privious(df_result,"SESSION")
 df_result.drop_duplicates(subset=['CODE_ETU', 'CODE_MOD'], inplace=True)
 
 # Extract unique values from the 'ID' column of df_module
-valid_ids = df_module['ID'].unique()
+valid_ids = df_module['CODE_MOD'].unique()
 # Filter df to keep only rows where 'CODE_MOD' is in the valid_ids list
 df_result = df_result[df_result['CODE_MOD'].isin(valid_ids)]
 
