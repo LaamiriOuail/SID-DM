@@ -22,6 +22,7 @@ $ docker build -t my_streamlit_app .
 ```bash
 $ docker run -p 8501:8501 my_streamlit_app
 ```
+go to http://localhost:8501
 
 ## Table Documentation
 
