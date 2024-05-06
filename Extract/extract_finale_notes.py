@@ -7,13 +7,13 @@ import pandas as pd
 
 base = "DATA/RES/"
 # Step 1: Read etudiant.csv to get student codes and their parcours
-etudiant_df = pd.read_csv(base+"/etudiant.csv")
+etudiant_df = pd.read_csv(base+"/Etudiant.csv")
 
 # Step 2: Filter module.csv based on parcours
-module_df = pd.read_csv(base+"/module.csv")
+module_df = pd.read_csv(base+"/Module.csv")
 
 # Step 3: Read result.csv to get data about modules associated with students
-result_df = pd.read_csv(base+"/cleaned_module_result.csv")
+result_df = pd.read_csv(base+"/Notes Par Module.csv")
 
 
 
