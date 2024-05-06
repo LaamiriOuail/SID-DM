@@ -1,4 +1,4 @@
-ID,NAME,PARCOURS,SEMESTRE
+CODE_MOD,NAME,PARCOURS,SEMESTRE
 TLGE1404,Algébre 1,GEGM,1
 TLGE1104,Circuits électriques et électroniques,GEGM,1
 TLGE1204,Electricité,GEGM,1
@@ -71,3 +71,28 @@ TLMP4304,Analyse 4,MIPC,4
 TLMP4404,Structure de données en C,MIPC,4
 TLMP4504,Chimie Organique 1,MIPC,4
 TLMP4604,Chimie Minérale 1,MIPC,4
+
+TLMI2104,Thermodynamique,MIP,2
+TLMI2204,Mécanique du point et Optique géométrique,MIP,2
+TLMI2304,Analyse 2,MIP,2
+TLMI2404,Algèbre 2,MIP,2
+TLMI2504,Structure de la matière,MIP,2
+TLMI2604,Langues et Communication 2,MIP,2
+TLMI1104,Circuits électriques et électroniques,MIP,1
+TLMI1204,Electricité,MIP,1
+TLMI1304,Analyse 1,MIP,1
+TLMI1404,Algèbre 1,MIP,1
+TLMI1504,Algorithmique et Programmation 1,MIP,1
+TLMI1604,Langues et Communication 1,MIP,1
+TLMI4104,Électromagnétisme,MIP,4
+TLMI4204,Mécanique quantique et Relativité,MIP,4
+TLMI4304,Analyse 4,MIP,4
+TLMI4404,Structure de données en C,MIP,4
+TLMI4504,Chimie organique 1,MIP,4
+TLMI4604,Chimie minérale 1,MIP,4
+TLMI3104,Mécanique des Solides,MIP,3
+TLMI3204, Analyse 3,MIP,3
+TLMI3304, Statistique descriptive/probabilités,MIP,3
+TLMI3404,Algorithmique et Programmation 2,MIP,3
+TLMI3504,Réactivité chimique,MIP,3
+TLMI3604,Langues et Communication 3,MIP,3
