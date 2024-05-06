@@ -353,6 +353,47 @@ def evolution_by_finale_notes():
                 st.pyplot(plot_pie_chart(filtered_data,result_))
 
 
+def evolution_by_diplome():
+    st.title("Taux de réussite, d’échec et d’acquisition par diplome")
+    
+    # Sidebar
+    st.sidebar.header("Customize Data")
+    selected_year = st.sidebar.multiselect("Select Year (Anne)", data["Notes Finale"]["ANNE_1"].dropna().unique().tolist() + data["Notes Finale"]["ANNE_2"].dropna().unique().tolist())
+    
+    # Get unique PARCOURS IDs from the Module dataframe
+    parcours_ids = data["Module"]["PARCOURS"].unique()
+    selected_parcours = st.sidebar.multiselect("Select Program (Parcours)", sorted(parcours_ids))
+    
+    # Plot type selection
+    plot_types = ["Data","Grouped Histogram", "Pie Chart"]
+    selected_plot_types = st.sidebar.multiselect("Select Plot Types or Data", plot_types,default=["Data"])
+
+    
+
+    
+    # If no session is selected, include all sessions
+    filtered_data = data["Notes Finale"][
+            (data["Notes Finale"]["ANNE_1"].isin(selected_year))  &
+            (data["Notes Finale"]["PARCOURS"].isin(selected_parcours))  
+        ]
+   
+
+
+    # Plot the selected plot types
+    for plot_type in selected_plot_types:
+        if plot_type == "Data":
+             # Display the filtered data
+            st.markdown(f"### Data Table :")
+            st.write(filtered_data)
+        elif plot_type == "Grouped Histogram":
+            # Plot grouped histogram
+            st.markdown(f"### Grouped Histogram of Module {selected_module} in {selected_year}, parcours: {selected_parcours}:")
+            st.pyplot(plot_grouped_histogram(filtered_data,"RESULT_DEUST",selected_module,selected_year,parcours=selected_parcours))
+        elif plot_type == "Pie Chart":
+            # Plot pie chart
+            st.markdown(f"### Pie Chart of Result Distribution:")
+            st.pyplot(plot_pie_chart(filtered_data,"RESULT_DEUST"))
+   
 
 
 
@@ -365,6 +406,7 @@ pages = [
     "Taux d'inscription",
     "Evolution par Module",
     "Evolution par Semestre,Anne",
+    "Evolution par Diplome",
 ]
 selected_pages = st.sidebar.selectbox("Select Page", pages)
 
@@ -383,3 +425,5 @@ elif "Evolution par Module"  in selected_pages:
     evolution_by_module()
 elif "Evolution par Semestre,Anne"  in selected_pages:
     evolution_by_finale_notes()
+elif "Evolution par Diplome"  in selected_pages:
+    evolution_by_diplome()
