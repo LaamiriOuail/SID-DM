@@ -194,14 +194,17 @@ def evolution_by_inscription():
 
 
 
-def plot_grouped_histogram(data, module_name, module_date, module_session):
+def plot_grouped_histogram(data,x_column, module_name, module_date, module_session:None=None,parcours:None=None):
     # Define color dictionary for consistent coloring
     color_dict = {'V': 'green', 'NV': 'red', 'AC': 'blue', 'NP': 'black'}
     
     # Plot grouped histogram with smaller size
     fig, ax = plt.subplots(figsize=(6, 6))
-    sns.histplot(data=data, x="RESULT", hue="RESULT", multiple="stack", ax=ax, palette=color_dict)
-    ax.set_title(f"Grouped Histogram of Module {module_name} in {module_date}, Session: {module_session}")
+    sns.histplot(data=data, x=x_column, hue=x_column, multiple="stack", ax=ax, palette=color_dict)
+    if module_session:
+        ax.set_title(f"Grouped Histogram of Module {module_name} in {module_date}, Session: {module_session}")
+    if parcours:
+        ax.set_title(f"Grouped Histogram of Module {module_name} in {module_date}, Parcours: {parcours}")
     ax.set_xlabel(f"Result of {module_name}")
     ax.set_ylabel(f"Count of Results of {module_name}")
     plt.xticks(rotation=45, ha='right')
@@ -209,13 +212,13 @@ def plot_grouped_histogram(data, module_name, module_date, module_session):
     return fig
 
 
-def plot_pie_chart(data):
+def plot_pie_chart(data,x_column):
     # Define color dictionary
     color_dict = {'V': 'green', 'NV': 'red', 'AC': 'blue', 'NP': 'black'}
     
     # Plot pie chart with smaller size
     fig, ax = plt.subplots(figsize=(6, 6))  # Adjust the figsize as per your preference
-    counts = data["RESULT"].value_counts()
+    counts = data[x_column].value_counts()
     ax.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=140, colors=[color_dict[label] for label in counts.index])
     ax.set_title("Pie Chart of Result Distribution")
     plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
@@ -280,14 +283,75 @@ def evolution_by_module():
         elif plot_type == "Grouped Histogram":
             # Plot grouped histogram
             st.markdown(f"### Grouped Histogram of Module {selected_module} in {selected_year}, session: {selected_session if selected_session else ['1,2']}:")
-            st.pyplot(plot_grouped_histogram(filtered_data,selected_module,selected_year,selected_session if selected_session else "1,2"))
+            st.pyplot(plot_grouped_histogram(filtered_data,"RESULT",selected_module,selected_year,module_session=selected_session if selected_session else "1,2"))
         elif plot_type == "Pie Chart":
             # Plot pie chart
             st.markdown(f"### Pie Chart of Result Distribution:")
-            st.pyplot(plot_pie_chart(filtered_data))
+            st.pyplot(plot_pie_chart(filtered_data,"RESULT"))
    
 
+def evolution_by_finale_notes():
+    st.title("Taux de réussite, d’échec et d’acquisition par notes finale")
+
+    # Get existing years without null values
+    existing_years = data["Notes Finale"]["ANNE_1"].dropna().unique().tolist() + data["Notes Finale"]["ANNE_2"].dropna().unique().tolist()
+    existing_years = sorted(list(set(existing_years)))
+
+    # Sidebar
+    st.sidebar.header("Customize Data")
+    selected_years = st.sidebar.multiselect("Select Year(s)", existing_years)
     
+    selected_year_session = st.sidebar.selectbox("Select Year Session (1,2)", [1,2])
+
+    # Based on the selected year, determine the possible semesters
+    possible_semesters:list=[]
+    if selected_year_session == 1:
+        possible_semesters += [None,1, 2]
+    else:
+        possible_semesters = [None,3, 4]
+    
+    selected_semester = st.sidebar.selectbox("Select Semester", possible_semesters)
+    
+    # Get unique PARCOURS IDs from the Notes Finale dataframe
+    parcours_ids = data["Notes Finale"]["PARCOURS"].unique()
+    selected_parcours = st.sidebar.multiselect("Select Program (Parcours)", sorted(parcours_ids))
+    
+    # Plot type selection
+    plot_types = ["Data", "Grouped Histogram", "Pie Chart"]
+    selected_plot_types = st.sidebar.multiselect("Select Plot Types or Data", plot_types, default=["Data"])
+
+
+    # Filter the data based on user selections
+    filtered_data=None
+    result_=""
+    if selected_semester and selected_parcours:
+        filtered_data = data["Notes Finale"][
+            (data["Notes Finale"][f"ANNE_{selected_year_session}"].isin(selected_years)) &
+            (data["Notes Finale"][f"RESULT_S{selected_semester}"].notna()) &
+            (data["Notes Finale"]["PARCOURS"].isin(selected_parcours))
+        ][["CODE_ETU", f"RESULT_S{selected_semester}" , f"NOTE_S{selected_semester}" , "PARCOURS"]]
+        result_=f"RESULT_S{selected_semester}"
+    elif selected_parcours:
+        filtered_data = data["Notes Finale"][
+            (data["Notes Finale"][f"ANNE_{selected_year_session}"].isin(selected_years)) &
+            (data["Notes Finale"]["PARCOURS"].isin(selected_parcours))
+        ][["CODE_ETU", f"RESULT_ANNE_{selected_year_session}" , f"NOTE_ANNE_{selected_year_session}", "PARCOURS"]]
+        result_=f"RESULT_ANNE_{selected_year_session}"
+
+    # Plot the selected plot types
+    if not (filtered_data is None):
+        for plot_type in selected_plot_types:
+            if plot_type == "Data":
+                # Display the filtered data
+                st.markdown("### Data Table:")
+                st.write(filtered_data)
+            elif plot_type == "Grouped Histogram":
+                # Plot grouped histogram
+                st.pyplot(plot_grouped_histogram(filtered_data,result_, "Final Notes", selected_years, parcours=selected_parcours))
+            elif plot_type == "Pie Chart":
+                # Plot pie chart
+                st.pyplot(plot_pie_chart(filtered_data,result_))
+
 
 
 
@@ -300,6 +364,7 @@ pages = [
     "Display Table", 
     "Taux d'inscription",
     "Evolution par Module",
+    "Evolution par Semestre,Anne",
 ]
 selected_pages = st.sidebar.selectbox("Select Page", pages)
 
@@ -316,3 +381,5 @@ elif "Taux d'inscription"  in selected_pages:
     evolution_by_inscription()
 elif "Evolution par Module"  in selected_pages:
     evolution_by_module()
+elif "Evolution par Semestre,Anne"  in selected_pages:
+    evolution_by_finale_notes()
