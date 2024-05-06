@@ -9,7 +9,8 @@ base = "DATA/RES/"
 
 
 # Read the merged CSV file into a DataFrame
-df = pd.read_csv(base+"/result.csv")
+df_result = pd.read_csv(base+"/result.csv")
+df_module = pd.read_csv(base+"/module.csv")
 
 # Function to clean the note values
 def clean_note_value(note):
@@ -50,22 +51,29 @@ def fill_missing_by_privious(df,column):
         print(f'{column} not a column in dataframe')
 
 # Filter the DataFrame to remove rows where CODE_ETU is null
-df.dropna(subset=['CODE_ETU'],inplace=True)
+df_result.dropna(subset=['CODE_ETU'],inplace=True)
 
 # Apply the clean_note_value function to the NOTE column
-df['NOTE'] = df['NOTE'].apply(clean_note_value)
+df_result['NOTE'] = df_result['NOTE'].apply(clean_note_value)
 
 # Apply the set_result function to the NOTE column and create the RESULT column
-df['RESULT'] = df['NOTE'].apply(set_result)
+df_result['RESULT'] = df_result['NOTE'].apply(set_result)
 
 # Apply the clean_note_value function to the NOTE column
-df['NOTE'] = df['NOTE'].apply(clean_null_note_value)
+df_result['NOTE'] = df_result['NOTE'].apply(clean_null_note_value)
 
-fill_missing_by_privious(df,"ANNE")
-fill_missing_by_privious(df,"SESSION")
+fill_missing_by_privious(df_result,"ANNE")
+fill_missing_by_privious(df_result,"SESSION")
 
+# Drop duplicates based on CODE_ETU and CODE_MOD
+df_result.drop_duplicates(subset=['CODE_ETU', 'CODE_MOD'], inplace=True)
+
+# Extract unique values from the 'ID' column of df_module
+valid_ids = df_module['ID'].unique()
+# Filter df to keep only rows where 'CODE_MOD' is in the valid_ids list
+df_result = df_result[df_result['CODE_MOD'].isin(valid_ids)]
 
 # Save the cleaned DataFrame back to a CSV file
-df.to_csv(base+"/cleaned_module_result.csv", index=False)
+df_result.to_csv(base+"/Notes Par Module.csv", index=False)
 
 print("Data cleaned and saved as cleaned_output.csv")
