@@ -227,24 +227,24 @@ def evolution_by_module():
     
     # Sidebar
     st.sidebar.header("Customize Data")
-    selected_year = st.sidebar.selectbox("Select Year (Anne)", sorted(data["Notes Par Module"]["ANNE"].unique()))
+    selected_year = st.sidebar.multiselect("Select Year (Anne)", sorted(data["Notes Par Module"]["ANNE"].unique()))
     
     # Get unique PARCOURS IDs from the Module dataframe
     parcours_ids = data["Module"]["PARCOURS"].unique()
-    selected_parcours = st.sidebar.selectbox("Select Program (Parcours)", sorted(parcours_ids))
+    selected_parcours = st.sidebar.multiselect("Select Program (Parcours)", sorted(parcours_ids))
     
     # Get unique semesters based on the selected parcours
-    semesters = data["Module"][data["Module"]["PARCOURS"] == selected_parcours]["SEMESTRE"].unique()
-    selected_semester = st.sidebar.selectbox("Select Semester", sorted(semesters))
+    semesters = data["Module"][data["Module"]["PARCOURS"].isin(selected_parcours)]["SEMESTRE"].unique()
+    selected_semester = st.sidebar.multiselect("Select Semester", sorted(semesters))
     
     # Get unique module names based on the selected parcours and semester
-    module_names = data["Module"][(data["Module"]["PARCOURS"] == selected_parcours) & 
-                                  (data["Module"]["SEMESTRE"] == selected_semester)]["NAME"].unique()
-    selected_module = st.sidebar.selectbox("Select Module Name", sorted(module_names))
+    module_names = data["Module"][(data["Module"]["PARCOURS"].isin(selected_parcours)) & 
+                                  (data["Module"]["SEMESTRE"].isin(selected_semester))]["NAME"].unique()
+    selected_module = st.sidebar.multiselect("Select Module Name", sorted(module_names))
 
     # Allow the session to be None (i.e., no filtering by session)
-    sessions = [None] + sorted(data["Notes Par Module"]["SESSION"].unique())
-    selected_session = st.sidebar.selectbox("Select Session", sessions)
+    sessions = sorted(data["Notes Par Module"]["SESSION"].unique())
+    selected_session = st.sidebar.multiselect("Select Session", sessions)
     
     # Plot type selection
     plot_types = ["Data","Grouped Histogram", "Pie Chart"]
@@ -253,21 +253,23 @@ def evolution_by_module():
     
 
     # Filter the data based on user selections
-    if selected_session is None:
+    if not selected_session:
+        # If no session is selected, include all sessions
         filtered_data = data["Notes Par Module"][
-            (data["Notes Par Module"]["ANNE"] == selected_year) &
-            (data["Notes Par Module"]["CODE_MOD"].isin(data["Module"][(data["Module"]["PARCOURS"] == selected_parcours) & 
-                                                                    (data["Module"]["NAME"] == selected_module) & 
-                                                                    (data["Module"]["SEMESTRE"] == selected_semester)]["CODE_MOD"]))
+            (data["Notes Par Module"]["ANNE"].isin(selected_year)) &
+            (data["Notes Par Module"]["CODE_MOD"].isin(data["Module"][(data["Module"]["PARCOURS"].isin(selected_parcours)) & 
+                                                                    (data["Module"]["SEMESTRE"].isin(selected_semester)) & 
+                                                                    (data["Module"]["NAME"].isin(selected_module))]["CODE_MOD"]))
         ]
     else:
         filtered_data = data["Notes Par Module"][
-            (data["Notes Par Module"]["ANNE"] == selected_year) &
-            (data["Notes Par Module"]["SESSION"] == selected_session) &
-            (data["Notes Par Module"]["CODE_MOD"].isin(data["Module"][(data["Module"]["PARCOURS"] == selected_parcours) & 
-                                                                    (data["Module"]["NAME"] == selected_module) & 
-                                                                    (data["Module"]["SEMESTRE"] == selected_semester)]["CODE_MOD"]))
+            (data["Notes Par Module"]["ANNE"].isin(selected_year)) &
+            (data["Notes Par Module"]["SESSION"].isin(selected_session)) &
+            (data["Notes Par Module"]["CODE_MOD"].isin(data["Module"][(data["Module"]["PARCOURS"].isin(selected_parcours)) & 
+                                                                    (data["Module"]["SEMESTRE"].isin(selected_semester)) & 
+                                                                    (data["Module"]["NAME"].isin(selected_module))]["CODE_MOD"]))
         ]
+
 
     # Plot the selected plot types
     for plot_type in selected_plot_types:
@@ -277,7 +279,7 @@ def evolution_by_module():
             st.write(filtered_data)
         elif plot_type == "Grouped Histogram":
             # Plot grouped histogram
-            st.markdown(f"### Grouped Histogram of Module {selected_module} in {selected_year}, session: {selected_session if selected_session else '1,2'}:")
+            st.markdown(f"### Grouped Histogram of Module {selected_module} in {selected_year}, session: {selected_session if selected_session else ['1,2']}:")
             st.pyplot(plot_grouped_histogram(filtered_data,selected_module,selected_year,selected_session if selected_session else "1,2"))
         elif plot_type == "Pie Chart":
             # Plot pie chart
