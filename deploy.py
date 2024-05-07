@@ -36,8 +36,8 @@ def download_and_parse_csv(url):
 
 # Sample data
 data = {
-    "Etudiant": download_and_parse_csv("https://raw.githubusercontent.com/LaamiriOuail/SID-DM/master/DATA/RES/etudiant.csv"),
-    "Module": download_and_parse_csv("https://raw.githubusercontent.com/LaamiriOuail/SID-DM/master/DATA/RES/module.csv"),
+    "Etudiant": download_and_parse_csv("https://raw.githubusercontent.com/LaamiriOuail/SID-DM/master/DATA/RES/Etudiant.csv"),
+    "Module": download_and_parse_csv("https://raw.githubusercontent.com/LaamiriOuail/SID-DM/master/DATA/RES/Module.csv"),
     "Notes Finale": download_and_parse_csv("https://raw.githubusercontent.com/LaamiriOuail/SID-DM/master/DATA/RES/Notes%20Finale.csv"),
     "Notes Par Module": download_and_parse_csv("https://raw.githubusercontent.com/LaamiriOuail/SID-DM/master/DATA/RES/Notes%20Par%20Module.csv"),
     "Inscription" : download_and_parse_csv("https://raw.githubusercontent.com/LaamiriOuail/SID-DM/master/DATA/RES/Inscription.csv")
