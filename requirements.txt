@@ -3,6 +3,6 @@ matplotlib
 streamlit
 openpyxl
 seaborn
-sklearn
+scikit-learn
 pydotplus
 numpy
