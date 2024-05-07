@@ -4,7 +4,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.cm as cm
-
+import numpy as np
 from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
@@ -18,6 +18,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier, export_graphviz
 from io import StringIO
 import pydotplus
+from sklearn import tree
+
 
 
 base_data_dir:str=str(Path("DATA/RES"))
@@ -524,39 +526,42 @@ def clusturing():
 def decesion_tree_page():
     selected_table = st.sidebar.selectbox("Select Table", list(data.keys()))
     selected_data = data[selected_table]  # Get the selected table data
-    features = st.sidebar.multiselect("Select Features", list(selected_data.columns), default=list(selected_data.columns))
-    target = st.sidebar.selectbox("Select Target", selected_data.columns)
     
+    # Select only numerical features for the multiselect
+    numerical_features = selected_data.select_dtypes(include=[np.number]).columns
+    features = st.sidebar.multiselect("Select Numerical Features", list(numerical_features), default=list(numerical_features))
+
+    # Select the target variable (ensure it's categorical)
+    target_candidates = selected_data.columns[selected_data.dtypes == 'object']
+    target = st.sidebar.selectbox("Select Target", target_candidates)
+
     # Remove the target from the list of features
     if target in features:
         features.remove(target)
 
-     # Handle missing values
+    # Handle missing values
 
-    
     X = selected_data[features]
     y = selected_data[target]
 
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # Ensure all features and target are encoded
-    X_train_encoded = pd.get_dummies(X_train, columns=features)
-    X_test_encoded = pd.get_dummies(X_test, columns=features)
-    y_train_encoded = pd.get_dummies(y_train, columns=[target])
-    y_test_encoded = pd.get_dummies(y_test, columns=[target])
-
     # Train a decision tree classifier
     clf = DecisionTreeClassifier()
-    clf.fit(X_train_encoded, y_train_encoded)
+    clf.fit(X_train, y_train)
 
-    # Export the decision tree to a Graphviz format
-    dot_data = StringIO()
-    export_graphviz(clf, out_file=dot_data, feature_names=X_train_encoded.columns, class_names=y_train_encoded.columns, filled=True, rounded=True, special_characters=True)
-    graph = pydotplus.graph_from_dot_data(dot_data.getvalue())
+    # Plot the decision tree
+    fig=plt.figure(figsize=(100,50))
+    tree.plot_tree(clf, 
+                   feature_names=features,  
+                   class_names=clf.classes_,  # Use clf.classes_ to get class names
+                   filled=True)
+    plt.title("Decision Tree")
 
-    # Visualize the decision tree
-    st.graphviz_chart(graph.to_string())
+    # Display the plot in Streamlit
+    st.pyplot(fig)
+
 
 
 
