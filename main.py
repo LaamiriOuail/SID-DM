@@ -5,7 +5,15 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.cm as cm
 
-
+from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.preprocessing import LabelEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 
 
 base_data_dir:str=str(Path("DATA/RES"))
@@ -394,10 +402,116 @@ def evolution_by_diplome():
             st.markdown(f"### Pie Chart of Result Distribution:")
             st.pyplot(plot_pie_chart(filtered_data,"RESULT_DEUST"))
    
+def clusturing():
+    selected_table = st.sidebar.selectbox("Select Table", list(data.keys()))
+    selected_data = data[selected_table]  # Get the selected table data
+    selected_rows = st.sidebar.multiselect("Select Rows", list(selected_data.columns), default=list(selected_data.columns))
+    
+    # Filter selected data with selected rows
+    selected_data = selected_data[selected_rows].copy()
+
+    # Handle missing values
+    missing_values = selected_data.isnull().sum()
+    if missing_values.any():
+        st.warning("Warning: Missing values detected! Imputing missing values.")
+        for col in selected_data.columns:
+            if selected_data[col].dtype == 'object':  # For categorical columns
+                imputer = SimpleImputer(strategy="most_frequent")
+                selected_data[col] = imputer.fit_transform(selected_data[[col]]).ravel()
+            else:  # For numeric columns
+                imputer = SimpleImputer(strategy="mean")
+                selected_data[col] = imputer.fit_transform(selected_data[[col]]).ravel()
+
+    # Identify and encode categorical columns
+    categorical_cols = selected_data.select_dtypes(include=['object']).columns
+    for col in categorical_cols:
+        encoder = LabelEncoder()
+        selected_data[col] = encoder.fit_transform(selected_data[col])
+
+    selected_algorithm = st.sidebar.selectbox("Select Algorithm", ["KMeans", "Hierarchical", "DBSCAN"])
+    if selected_algorithm != "DBSCAN":
+        number_of_clusters = st.sidebar.number_input("Number of Rows to Display", min_value=2, value=2,max_value=7)
+
+    # Apply selected algorithm
+    if selected_algorithm == "KMeans":
+        clustering_model = KMeans(n_clusters=number_of_clusters, random_state=42)
+    elif selected_algorithm == "Hierarchical":
+        clustering_model = AgglomerativeClustering(n_clusters=number_of_clusters)
+    elif selected_algorithm == "DBSCAN":
+        clustering_model = DBSCAN(eps=0.5, min_samples=20)
+
+    # Fit clustering model and get cluster labels
+    cluster_labels = clustering_model.fit_predict(selected_data[selected_rows])
+
+    # Add cluster labels to the data
+    selected_data['Cluster'] = cluster_labels
+
+    # Plot type selection
+    plot_types = ["Data","PCA Visualization", "t-SNE Visualization","LDA Visualization"]
+    selected_plot_types = st.sidebar.multiselect("Select Plot Types or Data", plot_types,default=["Data"])
 
 
+    # Plot the selected plot types
+    for plot_type in selected_plot_types:
+        if plot_type == "Data":
+             # Display the filtered data
+            st.markdown(f"### Data Table :")
+            st.write(selected_data)
+        elif plot_type == "PCA Visualization":
+            # Perform PCA for visualization
+            st.markdown(f"### PCA Visualization :")
 
+            pca = PCA(n_components=2)
+            pca_result = pca.fit_transform(selected_data[selected_rows])
 
+            # Create a scatter plot for PCA visualization
+            plt.figure(figsize=(8, 6))
+            for cluster in selected_data['Cluster'].unique():
+                plt.scatter(pca_result[selected_data['Cluster'] == cluster, 0],
+                            pca_result[selected_data['Cluster'] == cluster, 1],
+                            label=f'Cluster {cluster}')
+            plt.title('PCA Visualization')
+            plt.xlabel('Principal Component 1')
+            plt.ylabel('Principal Component 2')
+            plt.legend()
+            st.pyplot(plt)
+
+        elif plot_type == "t-SNE Visualization":
+            # Perform t-SNE for visualization
+            st.markdown(f"### t-SNE Visualization :")
+
+            tsne = TSNE(n_components=2, perplexity=30, n_iter=300, random_state=42)
+            tsne_result = tsne.fit_transform(selected_data[selected_rows])
+
+            # Create a scatter plot for t-SNE visualization
+            plt.figure(figsize=(8, 6))
+            for cluster in selected_data['Cluster'].unique():
+                plt.scatter(tsne_result[selected_data['Cluster'] == cluster, 0],
+                            tsne_result[selected_data['Cluster'] == cluster, 1],
+                            label=f'Cluster {cluster}')
+            plt.title('t-SNE Visualization')
+            plt.xlabel('t-SNE Component 1')
+            plt.ylabel('t-SNE Component 2')
+            plt.legend()
+            st.pyplot(plt)
+
+        elif plot_type == "LDA Visualization":
+            # Perform LDA for visualization
+            st.markdown(f"### LDA Visualization :")
+
+            lda = LDA(n_components=2)
+            lda_result = lda.fit_transform(selected_data[selected_rows], cluster_labels)
+
+            # Create a scatter plot for LDA visualization
+            plt.figure(figsize=(8, 6))
+            for cluster in selected_data['Cluster'].unique():
+                plt.scatter(lda_result[selected_data['Cluster'] == cluster, 0],
+                            lda_result[selected_data['Cluster'] == cluster, 1],
+                            label=f'Cluster {cluster}')
+            plt.title('LDA Visualization')
+            plt.xlabel('Linear Discriminant 1')
+            plt.legend()
+            st.pyplot(plt)
 
 # Sidebar
 st.sidebar.header("Navigation")
@@ -408,6 +522,7 @@ pages = [
     "Evolution par Module",
     "Evolution par Semestre,Anne",
     "Evolution par Diplome",
+    "Clustering",
 ]
 selected_pages = st.sidebar.selectbox("Select Page", pages)
 
@@ -428,3 +543,5 @@ elif "Evolution par Semestre,Anne"  in selected_pages:
     evolution_by_finale_notes()
 elif "Evolution par Diplome"  in selected_pages:
     evolution_by_diplome()
+elif "Clustering" in selected_pages:
+    clusturing()
