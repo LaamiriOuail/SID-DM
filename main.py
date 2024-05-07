@@ -524,9 +524,10 @@ def clusturing():
 
 
 def decesion_tree_page():
-    selected_table = st.sidebar.selectbox("Select Table", list(data.keys()))
+    selected_table = st.sidebar.selectbox("Select Table", ["Notes Finale","Notes Par Module"])
     selected_data = data[selected_table]  # Get the selected table data
     
+    criterion = st.sidebar.selectbox("Select Criterion", ["gini", "entropy", "log_loss"])
     # Select only numerical features for the multiselect
     numerical_features = selected_data.select_dtypes(include=[np.number]).columns
     features = st.sidebar.multiselect("Select Numerical Features", list(numerical_features), default=list(numerical_features))
@@ -548,15 +549,18 @@ def decesion_tree_page():
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Train a decision tree classifier
-    clf = DecisionTreeClassifier()
+    clf = DecisionTreeClassifier(criterion=criterion, random_state=42)
     clf.fit(X_train, y_train)
 
     # Plot the decision tree
-    fig=plt.figure(figsize=(100,50))
+    fig=plt.figure(figsize=(25,20))
     tree.plot_tree(clf, 
                    feature_names=features,  
                    class_names=clf.classes_,  # Use clf.classes_ to get class names
-                   filled=True)
+                   filled=True,
+                   rounded=True,
+                   proportion=True
+                   )
     plt.title("Decision Tree")
 
     # Display the plot in Streamlit
