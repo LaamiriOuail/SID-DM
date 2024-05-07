@@ -1,9 +1,14 @@
 import pandas as pd 
 
 # df_result = pd.read_csv("DATA/RES/cleaned_module_result.csv")
+import os
+import sys
 
-df_result = pd.read_excel("DATA/FACT_REUSITE.xlsx")
 
+base = "DATA/RES/"
+
+# Read the merged CSV file into a DataFrame
+df_inscription = pd.read_csv(base + "/Notes Par Module.csv")
 
 # # Get the count of null values for each column
 # null_counts = df_result.isnull().sum()
@@ -19,4 +24,7 @@ df_result = pd.read_excel("DATA/FACT_REUSITE.xlsx")
 #     print(f"CODE_ETU: {code_etu}, Number of Rows: {count}")
 
 
-print( df_result )
+null_counts = df_inscription.isnull().sum()
+
+print("Null value counts for each column:")
+print(null_counts)

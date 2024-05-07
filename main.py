@@ -398,6 +398,7 @@ def evolution_by_diplome():
 
 
 
+
 # Sidebar
 st.sidebar.header("Navigation")
 
