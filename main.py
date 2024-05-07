@@ -14,6 +14,10 @@ from sklearn.impute import SimpleImputer
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, export_graphviz
+from io import StringIO
+import pydotplus
 
 
 base_data_dir:str=str(Path("DATA/RES"))
@@ -516,6 +520,47 @@ def clusturing():
             else:
                 st.warning(f"Insufficient features or classes for LDA visualization.( n_components=2 cannot be larger than min(n_features={len(selected_data[selected_rows].columns)}, n_classes={len(selected_data['Cluster'].unique())} - 1) ) ")
 
+
+def decesion_tree_page():
+    selected_table = st.sidebar.selectbox("Select Table", list(data.keys()))
+    selected_data = data[selected_table]  # Get the selected table data
+    features = st.sidebar.multiselect("Select Features", list(selected_data.columns), default=list(selected_data.columns))
+    target = st.sidebar.selectbox("Select Target", selected_data.columns)
+    
+    # Remove the target from the list of features
+    if target in features:
+        features.remove(target)
+
+     # Handle missing values
+
+    
+    X = selected_data[features]
+    y = selected_data[target]
+
+    # Split the data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Ensure all features and target are encoded
+    X_train_encoded = pd.get_dummies(X_train, columns=features)
+    X_test_encoded = pd.get_dummies(X_test, columns=features)
+    y_train_encoded = pd.get_dummies(y_train, columns=[target])
+    y_test_encoded = pd.get_dummies(y_test, columns=[target])
+
+    # Train a decision tree classifier
+    clf = DecisionTreeClassifier()
+    clf.fit(X_train_encoded, y_train_encoded)
+
+    # Export the decision tree to a Graphviz format
+    dot_data = StringIO()
+    export_graphviz(clf, out_file=dot_data, feature_names=X_train_encoded.columns, class_names=y_train_encoded.columns, filled=True, rounded=True, special_characters=True)
+    graph = pydotplus.graph_from_dot_data(dot_data.getvalue())
+
+    # Visualize the decision tree
+    st.graphviz_chart(graph.to_string())
+
+
+
+
 # Sidebar
 st.sidebar.header("Navigation")
 
@@ -527,6 +572,7 @@ pages = [
     "Evolution par Diplome",
     "Clustering",
     "Prediction",
+    "Decision Tree",
 ]
 selected_pages = st.sidebar.selectbox("Select Page", pages)
 
@@ -549,3 +595,5 @@ elif "Evolution par Diplome"  in selected_pages:
     evolution_by_diplome()
 elif "Clustering" in selected_pages:
     clusturing()
+elif "Decision Tree" in selected_pages:
+    decesion_tree_page()
