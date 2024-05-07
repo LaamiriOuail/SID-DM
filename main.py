@@ -430,7 +430,7 @@ def clusturing():
 
     selected_algorithm = st.sidebar.selectbox("Select Algorithm", ["KMeans", "Hierarchical", "DBSCAN"])
     if selected_algorithm != "DBSCAN":
-        number_of_clusters = st.sidebar.number_input("Number of Rows to Display", min_value=2, value=2,max_value=7)
+        number_of_clusters = st.sidebar.number_input("Number of Clusters", min_value=2, value=2,max_value=7)
 
     # Apply selected algorithm
     if selected_algorithm == "KMeans":
@@ -498,20 +498,23 @@ def clusturing():
         elif plot_type == "LDA Visualization":
             # Perform LDA for visualization
             st.markdown(f"### LDA Visualization :")
+            if not (2 > min(len(selected_data[selected_rows].columns),len(selected_data['Cluster'].unique())-1)):
+                lda = LDA(n_components=2)  # Ensure you specify 2 components
+                lda_result = lda.fit_transform(selected_data[selected_rows], selected_data['Cluster'])
 
-            lda = LDA(n_components=2)
-            lda_result = lda.fit_transform(selected_data[selected_rows], cluster_labels)
-
-            # Create a scatter plot for LDA visualization
-            plt.figure(figsize=(8, 6))
-            for cluster in selected_data['Cluster'].unique():
-                plt.scatter(lda_result[selected_data['Cluster'] == cluster, 0],
-                            lda_result[selected_data['Cluster'] == cluster, 1],
-                            label=f'Cluster {cluster}')
-            plt.title('LDA Visualization')
-            plt.xlabel('Linear Discriminant 1')
-            plt.legend()
-            st.pyplot(plt)
+                # Create a scatter plot for LDA visualization
+                plt.figure(figsize=(8, 6))
+                for cluster in selected_data['Cluster'].unique():
+                    plt.scatter(lda_result[selected_data['Cluster'] == cluster, 0],
+                                lda_result[selected_data['Cluster'] == cluster, 1],
+                                label=f'Cluster {cluster}')
+                plt.title('LDA Visualization')
+                plt.xlabel('Linear Discriminant 1')
+                plt.ylabel('Linear Discriminant 2')
+                plt.legend()
+                st.pyplot(plt)
+            else:
+                st.warning(f"Insufficient features or classes for LDA visualization.( n_components=2 cannot be larger than min(n_features={len(selected_data[selected_rows].columns)}, n_classes={len(selected_data['Cluster'].unique())} - 1) ) ")
 
 # Sidebar
 st.sidebar.header("Navigation")
@@ -523,6 +526,7 @@ pages = [
     "Evolution par Semestre,Anne",
     "Evolution par Diplome",
     "Clustering",
+    "Prediction",
 ]
 selected_pages = st.sidebar.selectbox("Select Page", pages)
 
