@@ -30,10 +30,19 @@ data = {
     "Inscription" : pd.read_csv(f"{base_data_dir}/Inscription.csv")
 }
 
+def set_page_title(title:str)->None:
+    title_html = f"""
+    <head>
+    <title>{title}</title>
+    </head>
+    """
+
+    # Display the custom HTML
+    st.markdown(title_html, unsafe_allow_html=True)
 # Page functions
 def display_table_page():
     # Set the title of the web page
-    st.set_page_config(page_title="Display Data")
+    set_page_title(title="Display Data")
     st.title("Display Data")
     st.header(f"Selected Table: {selected_table}")
     if selected_table:
@@ -177,7 +186,7 @@ def plot_inscription_evolution_line_plot(x_col, y_col, hue_col=None):
 
 # Main function
 def evolution_by_inscription():
-    st.set_page_config(page_title="Evolution des taux d'inscription par série de bac et par année, ville, etc..")
+    set_page_title(title="Evolution des taux d'inscription par série de bac et par année, ville, etc..")
     st.title("Evolution des taux d'inscription par série de bac et par année, ville, etc..")
 
     # Sidebar and plot type selection
@@ -241,7 +250,7 @@ def plot_pie_chart(data,x_column):
 
 
 def evolution_by_module():
-    st.set_page_config(page_title="Taux de réussite, d’échec et d’acquisition par module")
+    set_page_title(title="Taux de réussite, d’échec et d’acquisition par module")
 
     st.title("Taux de réussite, d’échec et d’acquisition par module")
     
@@ -308,7 +317,7 @@ def evolution_by_module():
    
 
 def evolution_by_finale_notes():
-    st.set_page_config(page_title="Taux de réussite, d’échec et d’acquisition par notes finale")
+    set_page_title(title="Taux de réussite, d’échec et d’acquisition par notes finale")
 
     st.title("Taux de réussite, d’échec et d’acquisition par notes finale")
 
@@ -379,7 +388,7 @@ def evolution_by_finale_notes():
 
 
 def evolution_by_diplome():
-    st.set_page_config(page_title="Taux de réussite, d’échec et d’acquisition par diplome")
+    set_page_title(title="Taux de réussite, d’échec et d’acquisition par diplome")
 
     st.title("Taux de réussite, d’échec et d’acquisition par diplome")
     
@@ -428,7 +437,7 @@ def evolution_by_diplome():
                 st.warning("Enter valid years and parcours")
    
 def clusturing():
-    st.set_page_config(page_title="Clusturing")
+    set_page_title(title="Clusturing")
     
     selected_table = st.sidebar.selectbox("Select Table", list(data.keys()))
     selected_data = data[selected_table]  # Get the selected table data
@@ -545,7 +554,7 @@ def clusturing():
 
 
 def decesion_tree_page():
-    st.set_page_config(page_title="Decesion tree")
+    set_page_title(title="Decesion tree")
 
     selected_table = st.sidebar.selectbox("Select Table", ["Notes Finale","Notes Par Module"])
     selected_data = data[selected_table]  # Get the selected table data
