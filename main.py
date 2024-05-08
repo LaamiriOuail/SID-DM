@@ -594,13 +594,13 @@ def decesion_tree_page():
 st.sidebar.header("Navigation")
 
 pages = [
-    "Display Table", 
-    "Taux d'inscription",
-    "Evolution par Module",
-    "Evolution par Semestre,Anne",
-    "Evolution par Diplome",
+    "Display Table",
+    "Enrollment Rate",
+    "Evolution by Module",
+    "Evolution by Semester, Year",
+    "Evolution by Diploma",
     "Clustering",
-    "Decision Tree",
+    "Decision Tree"
 ]
 selected_pages = st.sidebar.selectbox("Select Page", pages)
 
@@ -613,13 +613,13 @@ if "Display Table" in selected_pages:
     display_table_page()
 
 # Display selected page
-elif "Taux d'inscription"  in selected_pages:
+elif "Enrollment Rate"  in selected_pages:
     evolution_by_inscription()
-elif "Evolution par Module"  in selected_pages:
+elif "Evolution by Module"  in selected_pages:
     evolution_by_module()
-elif "Evolution par Semestre,Anne"  in selected_pages:
+elif "Evolution by Semester, Year"  in selected_pages:
     evolution_by_finale_notes()
-elif "Evolution par Diplome"  in selected_pages:
+elif "Evolution by Diploma"  in selected_pages:
     evolution_by_diplome()
 elif "Clustering" in selected_pages:
     clusturing()
