@@ -361,10 +361,16 @@ def evolution_by_finale_notes():
                 st.write(filtered_data)
             elif plot_type == "Grouped Histogram":
                 # Plot grouped histogram
-                st.pyplot(plot_grouped_histogram(filtered_data,result_, "Final Notes", selected_years, parcours=selected_parcours))
+                if selected_years and selected_parcours:
+                    st.pyplot(plot_grouped_histogram(filtered_data,result_, "Final Notes", selected_years, parcours=selected_parcours))
+                else:
+                    st.warning("Enter valid years and parcours")
             elif plot_type == "Pie Chart":
                 # Plot pie chart
-                st.pyplot(plot_pie_chart(filtered_data,result_))
+                if selected_years and selected_parcours:
+                    st.pyplot(plot_pie_chart(filtered_data,result_))
+                else:
+                    st.warning("Enter valid years and parcours")
 
 
 def evolution_by_diplome():
@@ -372,7 +378,7 @@ def evolution_by_diplome():
     
     # Sidebar
     st.sidebar.header("Customize Data")
-    selected_year = st.sidebar.multiselect("Select Year (Anne)", data["Notes Finale"]["ANNE_1"].dropna().unique().tolist() + data["Notes Finale"]["ANNE_2"].dropna().unique().tolist())
+    selected_year = st.sidebar.multiselect("Select Year (Anne)", sorted(list(set(data["Notes Finale"]["ANNE_1"].dropna().unique().tolist() + data["Notes Finale"]["ANNE_2"].dropna().unique().tolist()))))
     
     # Get unique PARCOURS IDs from the Module dataframe
     parcours_ids = data["Module"]["PARCOURS"].unique()
@@ -401,12 +407,18 @@ def evolution_by_diplome():
             st.write(filtered_data)
         elif plot_type == "Grouped Histogram":
             # Plot grouped histogram
-            st.markdown(f"### Grouped Histogram of Module {selected_module} in {selected_year}, parcours: {selected_parcours}:")
-            st.pyplot(plot_grouped_histogram(filtered_data,"RESULT_DEUST",selected_module,selected_year,parcours=selected_parcours))
+            st.markdown(f"### Grouped Histogram in {selected_year}, parcours: {selected_parcours}:")
+            if selected_year and selected_parcours:
+                st.pyplot(plot_grouped_histogram(filtered_data,"RESULT_DEUST","",selected_year,parcours=selected_parcours))
+            else:
+                st.warning("Enter valid years and parcours")
         elif plot_type == "Pie Chart":
             # Plot pie chart
             st.markdown(f"### Pie Chart of Result Distribution:")
-            st.pyplot(plot_pie_chart(filtered_data,"RESULT_DEUST"))
+            if selected_year and selected_parcours:
+                st.pyplot(plot_pie_chart(filtered_data,"RESULT_DEUST"))
+            else:
+                st.warning("Enter valid years and parcours")
    
 def clusturing():
     selected_table = st.sidebar.selectbox("Select Table", list(data.keys()))
