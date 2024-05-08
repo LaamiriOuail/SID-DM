@@ -17,7 +17,6 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier, export_graphviz
 from io import StringIO
-import pydotplus
 from sklearn import tree
 
 import requests
@@ -372,10 +371,16 @@ def evolution_by_finale_notes():
                 st.write(filtered_data)
             elif plot_type == "Grouped Histogram":
                 # Plot grouped histogram
-                st.pyplot(plot_grouped_histogram(filtered_data,result_, "Final Notes", selected_years, parcours=selected_parcours))
+                if selected_years and selected_parcours:
+                    st.pyplot(plot_grouped_histogram(filtered_data,result_, "Final Notes", selected_years, parcours=selected_parcours))
+                else:
+                    st.warning("Enter valid years and parcours")
             elif plot_type == "Pie Chart":
                 # Plot pie chart
-                st.pyplot(plot_pie_chart(filtered_data,result_))
+                if selected_years and selected_parcours:
+                    st.pyplot(plot_pie_chart(filtered_data,result_))
+                else:
+                    st.warning("Enter valid years and parcours")
 
 
 def evolution_by_diplome():
@@ -383,7 +388,7 @@ def evolution_by_diplome():
     
     # Sidebar
     st.sidebar.header("Customize Data")
-    selected_year = st.sidebar.multiselect("Select Year (Anne)", data["Notes Finale"]["ANNE_1"].dropna().unique().tolist() + data["Notes Finale"]["ANNE_2"].dropna().unique().tolist())
+    selected_year = st.sidebar.multiselect("Select Year (Anne)", sorted(list(set(data["Notes Finale"]["ANNE_1"].dropna().unique().tolist() + data["Notes Finale"]["ANNE_2"].dropna().unique().tolist()))))
     
     # Get unique PARCOURS IDs from the Module dataframe
     parcours_ids = data["Module"]["PARCOURS"].unique()
@@ -412,12 +417,18 @@ def evolution_by_diplome():
             st.write(filtered_data)
         elif plot_type == "Grouped Histogram":
             # Plot grouped histogram
-            st.markdown(f"### Grouped Histogram of Module {selected_module} in {selected_year}, parcours: {selected_parcours}:")
-            st.pyplot(plot_grouped_histogram(filtered_data,"RESULT_DEUST",selected_module,selected_year,parcours=selected_parcours))
+            st.markdown(f"### Grouped Histogram in {selected_year}, parcours: {selected_parcours}:")
+            if selected_year and selected_parcours:
+                st.pyplot(plot_grouped_histogram(filtered_data,"RESULT_DEUST","",selected_year,parcours=selected_parcours))
+            else:
+                st.warning("Enter valid years and parcours")
         elif plot_type == "Pie Chart":
             # Plot pie chart
             st.markdown(f"### Pie Chart of Result Distribution:")
-            st.pyplot(plot_pie_chart(filtered_data,"RESULT_DEUST"))
+            if selected_year and selected_parcours:
+                st.pyplot(plot_pie_chart(filtered_data,"RESULT_DEUST"))
+            else:
+                st.warning("Enter valid years and parcours")
    
 def clusturing():
     selected_table = st.sidebar.selectbox("Select Table", list(data.keys()))
@@ -535,9 +546,10 @@ def clusturing():
 
 
 def decesion_tree_page():
-    selected_table = st.sidebar.selectbox("Select Table", list(data.keys()))
+    selected_table = st.sidebar.selectbox("Select Table", ["Notes Finale","Notes Par Module"])
     selected_data = data[selected_table]  # Get the selected table data
     
+    criterion = st.sidebar.selectbox("Select Criterion", ["gini", "entropy", "log_loss"])
     # Select only numerical features for the multiselect
     numerical_features = selected_data.select_dtypes(include=[np.number]).columns
     features = st.sidebar.multiselect("Select Numerical Features", list(numerical_features), default=list(numerical_features))
@@ -559,15 +571,18 @@ def decesion_tree_page():
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Train a decision tree classifier
-    clf = DecisionTreeClassifier()
+    clf = DecisionTreeClassifier(criterion=criterion, random_state=42)
     clf.fit(X_train, y_train)
 
     # Plot the decision tree
-    fig=plt.figure(figsize=(100,50))
+    fig=plt.figure(figsize=(25,20))
     tree.plot_tree(clf, 
                    feature_names=features,  
                    class_names=clf.classes_,  # Use clf.classes_ to get class names
-                   filled=True)
+                   filled=True,
+                   rounded=True,
+                   proportion=True
+                   )
     plt.title("Decision Tree")
 
     # Display the plot in Streamlit
@@ -587,7 +602,6 @@ pages = [
     "Evolution par Semestre,Anne",
     "Evolution par Diplome",
     "Clustering",
-    "Prediction",
     "Decision Tree",
 ]
 selected_pages = st.sidebar.selectbox("Select Page", pages)

@@ -16,8 +16,6 @@ from sklearn.manifold import TSNE
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier, export_graphviz
-from io import StringIO
-import pydotplus
 from sklearn import tree
 
 
@@ -592,7 +590,6 @@ pages = [
     "Evolution par Semestre,Anne",
     "Evolution par Diplome",
     "Clustering",
-    "Prediction",
     "Decision Tree",
 ]
 selected_pages = st.sidebar.selectbox("Select Page", pages)
