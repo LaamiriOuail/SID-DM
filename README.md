@@ -1,24 +1,40 @@
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://fst-dm.streamlit.app/)
+
 # Project Documentation
 
 This project involves managing data related to students, modules, and their academic performance. Below is the documentation for the tables used in this project and their relationships.
 
 ## Setup :
+### Clone repository :
+```bash
+$ git clone https://github.com/LaamiriOuail/SID-DM.git
+$ cd SID-DM
+```
 
-## Install requirements :
+### Create virtual environment :
+```bash
+$ python3 -m venv venv_name
+```
+### Activate virtual environment :
+```bash
+$ source venv_name/bin/activate
+```
+### Install requirements :
 ```bash
 $ pip3 install -r requirements.txt
 ```
 
-## Run app :
+### Run app :
 ```bash
 $ streamlit run ./main.py
 ```
 
-## Build docker image : 
+## Docker :
+## #Build docker image : 
 ```bash
 $ docker build -t my_streamlit_app . 
 ```
-## Run container:
+### Run container:
 ```bash
 $ docker run -p 8501:8501 my_streamlit_app
 ```
