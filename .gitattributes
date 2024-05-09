@@ -1,1 +1,6 @@
 DATA/RES/*.csv filter=lfs diff=lfs merge=lfs -text
+DATA/RES/Etudiant.csv filter=lfs diff=lfs merge=lfs -text
+DATA/RES/Inscription.csv filter=lfs diff=lfs merge=lfs -text
+DATA/RES/Module.csv filter=lfs diff=lfs merge=lfs -text
+DATA/RES/Notes[[:space:]]Finale.csv filter=lfs diff=lfs merge=lfs -text
+DATA/RES/Notes[[:space:]]Par[[:space:]]Module.csv filter=lfs diff=lfs merge=lfs -text
